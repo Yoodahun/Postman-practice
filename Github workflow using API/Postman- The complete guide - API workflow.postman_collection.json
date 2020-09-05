@@ -1,0 +1,427 @@
+{
+	"info": {
+		"_postman_id": "3a59f3b7-9d86-4b24-85d0-9259d655680c",
+		"name": "Postman: The complete guide - API workflow",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Call Github repository information",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{githubPassword}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{githubUsername}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.github.com/user/repos",
+					"protocol": "https",
+					"host": [
+						"api",
+						"github",
+						"com"
+					],
+					"path": [
+						"user",
+						"repos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Github repository",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0743dad0-506a-4df4-a077-07bd337d8429",
+						"exec": [
+							" var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"    pm.environment.set(\"owner\", jsonData.owner.login);",
+							"    pm.environment.set(\"reponame\", jsonData.name);",
+							"",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{githubPassword}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{githubUsername}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\" : \"Test repository using Github API with Postman\",\n    \"description\" : \"This repository is created by Github API\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api.github.com/user/repos",
+					"protocol": "https",
+					"host": [
+						"api",
+						"github",
+						"com"
+					],
+					"path": [
+						"user",
+						"repos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Github Repository information",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1d87b18b-609e-44c4-af65-329022518cbb",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.github.com/repos/:owner/:repo",
+					"protocol": "https",
+					"host": [
+						"api",
+						"github",
+						"com"
+					],
+					"path": [
+						"repos",
+						":owner",
+						":repo"
+					],
+					"variable": [
+						{
+							"key": "owner",
+							"value": "{{owner}}"
+						},
+						{
+							"key": "repo",
+							"value": "{{reponame}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Github Repository which Deleted",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "dcc7f7e7-1f32-415b-acea-af1943aa467c",
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"    pm.environment.unset(\"owner\");",
+							"    pm.environment.unset(\"reponame\");",
+							"    pm.environment.unset(\"issue_number\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{githubPassword}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{githubUsername}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.github.com/repos/:owner/:repo",
+					"protocol": "https",
+					"host": [
+						"api",
+						"github",
+						"com"
+					],
+					"path": [
+						"repos",
+						":owner",
+						":repo"
+					],
+					"variable": [
+						{
+							"key": "owner",
+							"value": "{{owner}}"
+						},
+						{
+							"key": "repo",
+							"value": "{{reponame}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create an Issue in Github Repository",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "76f72392-1fc3-4174-b359-7413df1b75ae",
+						"exec": [
+							"",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"    pm.environment.set(\"issue_number\", pm.response.json().number);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{githubPassword}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{githubUsername}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\":\"Found a bug\",\n    \"body\" : \"This issue has been automatically created by Postman\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api.github.com/repos/:owner/:repo/issues",
+					"protocol": "https",
+					"host": [
+						"api",
+						"github",
+						"com"
+					],
+					"path": [
+						"repos",
+						":owner",
+						":repo",
+						"issues"
+					],
+					"variable": [
+						{
+							"key": "owner",
+							"value": "{{owner}}"
+						},
+						{
+							"key": "repo",
+							"value": "{{reponame}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get an Issue in Github Repository",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "79e3daab-b9b3-4dff-af0f-4f1e2195de24",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Title is Found a bug\", function () {",
+							"    pm.expect(pm.response.json().title).to.eql(\"Found a bug\");",
+							"    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{githubPassword}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{githubUsername}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.github.com/repos/:owner/:repo/issues/:issue_number",
+					"protocol": "https",
+					"host": [
+						"api",
+						"github",
+						"com"
+					],
+					"path": [
+						"repos",
+						":owner",
+						":repo",
+						"issues",
+						":issue_number"
+					],
+					"variable": [
+						{
+							"key": "owner",
+							"value": "{{owner}}"
+						},
+						{
+							"key": "repo",
+							"value": "{{reponame}}"
+						},
+						{
+							"key": "issue_number",
+							"value": "{{issue_number}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Github Repository",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "5f02973a-6abf-43a5-aa81-8789218c0f68",
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{githubPassword}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{githubUsername}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://api.github.com/repos/:owner/:repo",
+					"protocol": "https",
+					"host": [
+						"api",
+						"github",
+						"com"
+					],
+					"path": [
+						"repos",
+						":owner",
+						":repo"
+					],
+					"variable": [
+						{
+							"key": "owner",
+							"value": "{{owner}}"
+						},
+						{
+							"key": "repo",
+							"value": "{{reponame}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
