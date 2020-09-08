@@ -38,9 +38,35 @@
 			"name": "Create the Trello Board",
 			"event": [
 				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b5615a13-c42e-46ba-af4a-d4bc767fcab3",
+						"exec": [
+							"",
+							"pm.environment.set(\"boardName\", increaseNumber());",
+							"postman.setNextRequest(\"Create TODO List in Trello Board\");",
+							"",
+							"",
+							"function getRandomBoardName() {",
+							"    return \"My board name \" + parseInt(Math.random()*1000);",
+							"}",
+							"",
+							"function increaseNumber() {",
+							"    //boardNameNumber is start number 0",
+							"    var boardNameNumber = pm.environment.get(\"boardNameNumber\");",
+							"    boardNameNumber++;",
+							"    pm.environment.set(\"boardNameNumber\", boardNameNumber);",
+							"    return \"My Board \" + boardNameNumber;",
+							"",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
 					"listen": "test",
 					"script": {
-						"id": "690ddc81-a6f0-40c2-aee5-9355d371fa25",
+						"id": "13f4f2ef-db8a-4932-8f45-101ff26e4146",
 						"exec": [
 							"//status code",
 							"pm.test(\"Status code is 200\", function () {",
@@ -50,7 +76,7 @@
 							"//json Data",
 							"pm.test(\"Board shoud be created\", function () {",
 							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData.name).to.eql(\"my new board using API\");",
+							"    pm.expect(jsonData.name).to.eql(pm.environment.get(\"boardName\"));",
 							"    pm.globals.set(\"boardId\", jsonData.id);",
 							"    ",
 							"});",
@@ -69,7 +95,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "https://api.trello.com/1/boards/?key={{TrelloKey}}&token={{TrelloToken}}&name=my new board using API&defaultLists=false",
+					"raw": "https://api.trello.com/1/boards/?key={{TrelloKey}}&token={{TrelloToken}}&name={{boardName}}&defaultLists=false",
 					"protocol": "https",
 					"host": [
 						"api",
@@ -92,7 +118,7 @@
 						},
 						{
 							"key": "name",
-							"value": "my new board using API"
+							"value": "{{boardName}}"
 						},
 						{
 							"key": "defaultLists",
@@ -173,6 +199,16 @@
 						],
 						"type": "text/javascript"
 					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "97fe98cc-23f5-4f1a-8fe6-8ff74608ac74",
+						"exec": [
+							"postman.setNextRequest(\"Create DONE List in Trello Board\");"
+						],
+						"type": "text/javascript"
+					}
 				}
 			],
 			"request": {
@@ -236,6 +272,16 @@
 						],
 						"type": "text/javascript"
 					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "00ea2dfb-6b5b-4e5b-9c53-aaf21c27af5a",
+						"exec": [
+							"postman.setNextRequest(\"Create card in TODO List\");"
+						],
+						"type": "text/javascript"
+					}
 				}
 			],
 			"request": {
@@ -296,6 +342,16 @@
 							"    pm.expect(jsonData.closed).to.eql(false);",
 							"});",
 							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "42c12274-2395-4e77-a1b7-3e9565444fcd",
+						"exec": [
+							"postman.setNextRequest(\"Update card in TODO List to DONE List\");"
 						],
 						"type": "text/javascript"
 					}
@@ -366,6 +422,16 @@
 						],
 						"type": "text/javascript"
 					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "fe729eaf-c780-4eef-9e70-c660d423aade",
+						"exec": [
+							"postman.setNextRequest(\"Delete the Trello Board\");"
+						],
+						"type": "text/javascript"
+					}
 				}
 			],
 			"request": {
@@ -422,6 +488,16 @@
 						],
 						"type": "text/javascript"
 					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "ae8abf95-38ae-4262-9144-8e52419ea603",
+						"exec": [
+							"postman.setNextRequest(\"Get all Boards\");"
+						],
+						"type": "text/javascript"
+					}
 				}
 			],
 			"request": {
@@ -454,6 +530,71 @@
 						{
 							"key": "id",
 							"value": "{{boardId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all Boards",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "97017233-e811-4879-8e57-29ac8a828c53",
+						"exec": [
+							"let id;",
+							"if( pm.response.json()[0].id != undefined) {",
+							"    id = pm.response.json()[0].id;",
+							"    pm.globals.set(\"boardId\", id);",
+							"    postman.setNextRequest(\"Delete the Trello Board\");",
+							"",
+							"} else {",
+							"    console.log(\"id is undefined\")",
+							"    postman.setNextRequest(null);",
+							"}",
+							"",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.trello.com/1/members/:id/boards?key={{TrelloKey}}&token={{TrelloToken}}",
+					"protocol": "https",
+					"host": [
+						"api",
+						"trello",
+						"com"
+					],
+					"path": [
+						"1",
+						"members",
+						":id",
+						"boards"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{TrelloKey}}"
+						},
+						{
+							"key": "token",
+							"value": "{{TrelloToken}}"
+						}
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "yoodahun"
 						}
 					]
 				}
